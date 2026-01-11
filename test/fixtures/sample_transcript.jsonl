@@ -1,0 +1,5 @@
+{"requestId":"req1","message":{"role":"assistant","content":[{"text":"First response from Claude with some helpful information."}]},"timestamp":"2025-01-11T10:00:00.000Z"}
+{"requestId":"req2","message":{"role":"assistant","content":[{"text":"Second response with error handling code:\n\ntry {\n  doSomething();\n} catch (e) {\n  console.error(e);\n}"}]},"timestamp":"2025-01-11T10:05:00.000Z"}
+{"requestId":"req3","message":{"role":"assistant","content":[{"text":"Third response about git commit commands:\n\ngit add .\ngit commit -m \"Your message\"\ngit push origin main"}]},"timestamp":"2025-01-11T10:10:00.000Z"}
+{"requestId":"req4","message":{"role":"user","content":[{"text":"This is a user message and should be ignored"}]},"timestamp":"2025-01-11T10:11:00.000Z"}
+{"requestId":"req5","message":{"role":"assistant","content":[{"text":"Response with TODO and FIXME markers:\n\n// TODO: Add validation\n// FIXME: Handle edge case"}]},"timestamp":"2025-01-11T10:15:00.000Z"}
