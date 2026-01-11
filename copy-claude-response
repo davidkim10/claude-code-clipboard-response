@@ -33,7 +33,7 @@ if [[ "$INPUT" =~ \"prompt\":[[:space:]]*\"([^\"]+)\" ]]; then
 fi
 
 # Check if this is our command
-if [[ ! "$PROMPT" =~ ^${COMMAND_NAME}([[:space:]]+(list([[:space:]]+[0-9]+)?|find[[:space:]]+\"[^\"]+\"|debug([[:space:]]+[0-9]+)?|[0-9]+))?$ ]]; then
+if [[ ! "$PROMPT" =~ ^${COMMAND_NAME}([[:space:]]+(-f[[:space:]]+.+|list([[:space:]]+[0-9]+)?|debug([[:space:]]+[0-9]+)?|[0-9]+))?$ ]]; then
     exit 0
 fi
 
@@ -63,7 +63,7 @@ LIST_COUNT=$DEFAULT_LIST_COUNT
 if [[ "$PROMPT" =~ ^${COMMAND_NAME}[[:space:]]+list([[:space:]]+([0-9]+))?$ ]]; then
     LIST_MODE=true
     [[ -n "${BASH_REMATCH[2]}" ]] && LIST_COUNT=${BASH_REMATCH[2]}
-elif [[ "$PROMPT" =~ ^${COMMAND_NAME}[[:space:]]+find[[:space:]]+\"([^\"]+)\"$ ]]; then
+elif [[ "$PROMPT" =~ ^${COMMAND_NAME}[[:space:]]+-f[[:space:]]+(.+)$ ]]; then
     FIND_MODE=true
     SEARCH_TERM="${BASH_REMATCH[1]}"
 elif [[ "$PROMPT" =~ ^${COMMAND_NAME}[[:space:]]+debug([[:space:]]+([0-9]+))?$ ]]; then
