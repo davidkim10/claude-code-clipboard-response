@@ -33,7 +33,7 @@ if [[ "$INPUT" =~ \"prompt\":[[:space:]]*\"([^\"]+)\" ]]; then
 fi
 
 # Check if this is our command
-if [[ ! "$PROMPT" =~ ^${COMMAND_NAME}([[:space:]]+(-f[[:space:]]+.+|list([[:space:]]+[0-9]+)?|debug([[:space:]]+[0-9]+)?|[0-9]+))?$ ]]; then
+if [[ ! "$PROMPT" =~ ^${COMMAND_NAME}([[:space:]]+(-fr?[[:space:]]+.+|-ls([[:space:]]+[0-9]+)?|-debug([[:space:]]+[0-9]+)?|[0-9]+))?$ ]]; then
     exit 0
 fi
 
@@ -55,18 +55,23 @@ fi
 # Parse command arguments
 LIST_MODE=false
 FIND_MODE=false
+REGEX_MODE=false
 DEBUG_MODE=false
 SEARCH_TERM=""
 RESPONSE_NUM=1
 LIST_COUNT=$DEFAULT_LIST_COUNT
 
-if [[ "$PROMPT" =~ ^${COMMAND_NAME}[[:space:]]+list([[:space:]]+([0-9]+))?$ ]]; then
+if [[ "$PROMPT" =~ ^${COMMAND_NAME}[[:space:]]+-ls([[:space:]]+([0-9]+))?$ ]]; then
     LIST_MODE=true
     [[ -n "${BASH_REMATCH[2]}" ]] && LIST_COUNT=${BASH_REMATCH[2]}
+elif [[ "$PROMPT" =~ ^${COMMAND_NAME}[[:space:]]+-fr[[:space:]]+(.+)$ ]]; then
+    FIND_MODE=true
+    REGEX_MODE=true
+    SEARCH_TERM="${BASH_REMATCH[1]}"
 elif [[ "$PROMPT" =~ ^${COMMAND_NAME}[[:space:]]+-f[[:space:]]+(.+)$ ]]; then
     FIND_MODE=true
     SEARCH_TERM="${BASH_REMATCH[1]}"
-elif [[ "$PROMPT" =~ ^${COMMAND_NAME}[[:space:]]+debug([[:space:]]+([0-9]+))?$ ]]; then
+elif [[ "$PROMPT" =~ ^${COMMAND_NAME}[[:space:]]+-debug([[:space:]]+([0-9]+))?$ ]]; then
     DEBUG_MODE=true
     [[ -n "${BASH_REMATCH[2]}" ]] && RESPONSE_NUM=${BASH_REMATCH[2]}
 elif [[ "$PROMPT" =~ ^${COMMAND_NAME}[[:space:]]+([0-9]+)$ ]]; then
@@ -132,11 +137,20 @@ generate_preview() {
 
 # Handle find mode
 if [ "$FIND_MODE" = true ]; then
-    echo "Searching for \"$SEARCH_TERM\":" >&2
+    if [ "$REGEX_MODE" = true ]; then
+        echo "Regex search for \"$SEARCH_TERM\":" >&2
+    else
+        echo "Searching for \"$SEARCH_TERM\":" >&2
+    fi
     found=0
     for ((i=0; i<TOTAL_RESPONSES; i++)); do
         text=$(get_response $i)
-        if echo "$text" | grep -Fqi "$SEARCH_TERM"; then
+        if [ "$REGEX_MODE" = true ]; then
+            match=$(echo "$text" | grep -Eqi "$SEARCH_TERM" 2>/dev/null && echo "yes")
+        else
+            match=$(echo "$text" | grep -Fqi "$SEARCH_TERM" && echo "yes")
+        fi
+        if [ "$match" = "yes" ]; then
             ((found++))
             preview=$(generate_preview "$text")
             time_ago=$(format_time_ago "$(get_timestamp $i)")

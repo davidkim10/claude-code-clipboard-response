@@ -10,8 +10,10 @@ The command name `-copy` is now configurabled. Just set your `COMMAND_NAME` vari
 
 - **Quick Copy**: `-copy` copies the latest response
 - **Numbered Access**: `-copy 3` copies a specific response
-- **List Responses**: `-copy list` shows available responses with previews
+- **List Responses**: `-copy -ls` shows available responses with previews
 - **Search Responses**: `-copy -f keyword` finds responses containing text
+- **Regex Search**: `-copy -fr pattern` finds responses matching a regex pattern
+- **Debug Mode**: `-copy -debug` shows response details with byte/char count
 - **Timestamps**: Shows when each response was created
 - **Cross-Platform**: Works on macOS, Linux, and Windows/WSL
 
@@ -57,9 +59,12 @@ The command name `-copy` is now configurabled. Just set your `COMMAND_NAME` vari
 |---------|-------------|
 | `-copy` | Copy the latest Claude response |
 | `-copy 2` | Copy response #2 |
-| `-copy list` | List last 10 responses with previews |
-| `-copy list 5` | List last 5 responses |
+| `-copy -ls` | List last 10 responses with previews |
+| `-copy -ls 5` | List last 5 responses |
 | `-copy -f error` | Find responses containing "error" |
+| `-copy -fr "error.*fix"` | Find responses matching regex pattern |
+| `-copy -debug` | Show latest response with byte/char stats |
+| `-copy -debug 3` | Show response #3 with stats |
 
 ### Examples
 
@@ -74,14 +79,14 @@ The command name `-copy` is now configurabled. Just set your `COMMAND_NAME` vari
 **List recent responses:**
 
 ```
--copy list
+-copy -ls
 ```
 
 ```
 Responses (1-3, showing 3):
-    3 [  2m ago]: Here's the updated function with error handling...
+    1 [  2m ago]: Here's the updated function with error handling...
     2 [ 15m ago]: I'll help you debug this issue. First, let's check...
-    1 [  1h ago]: To implement this feature, we need to modify...
+    3 [  1h ago]: To implement this feature, we need to modify...
 ```
 
 **Search for specific content:**
@@ -95,6 +100,33 @@ Searching for "git commit":
     2 [ 15m ago]: I'll help you debug this issue. First, let's check...
     5 [  2h ago]: You can create a git commit using the following...
 Found 2 matches
+```
+
+**Regex search:**
+
+```
+-copy -fr "TODO|FIXME"
+```
+
+```
+Regex search for "TODO|FIXME":
+    3 [ 10m ago]: // TODO: Add error handling here...
+    7 [  1h ago]: // FIXME: This needs refactoring...
+Found 2 matches
+```
+
+**Debug a response:**
+
+```
+-copy -debug
+```
+
+```
+=== DEBUG ===
+Here's the updated function with error handling...
+
+Bytes: 1234
+Chars: 1200
 ```
 
 ## How It Works
@@ -148,6 +180,47 @@ The script:
 - Bash shell
 - `jq` for JSON parsing
 - Platform-specific clipboard utility (pbcopy/xclip/clip.exe)
+
+## Testing
+
+This project uses [Bats](https://github.com/bats-core/bats-core) (Bash Automated Testing System) for unit tests.
+
+### Install Bats
+
+```bash
+# macOS
+brew install bats-core
+
+# Linux (Ubuntu/Debian)
+sudo apt install bats
+
+# Or install from source
+git clone https://github.com/bats-core/bats-core.git
+cd bats-core
+./install.sh /usr/local
+```
+
+### Run Tests
+
+```bash
+# Run all tests
+bats test/
+
+# Run with verbose output
+bats --verbose-run test/
+
+# Run a specific test file
+bats test/copy-claude-response.bats
+```
+
+### Test Coverage
+
+The test suite covers:
+- `generate_preview()` - Text truncation and preview generation
+- `format_time_ago()` - Timestamp formatting
+- Command regex matching (all `-copy` variants)
+- Integration tests with mock transcripts
+- Clipboard functionality (platform-specific)
 
 ## Contributing
 
