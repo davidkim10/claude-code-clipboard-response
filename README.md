@@ -1,4 +1,4 @@
-# Claude Code Response Copier
+# Claude Code Response Clipboard
 
 A Claude Code hook that adds a `-copy` command to quickly copy Claude's responses to your clipboard. 
 
@@ -22,7 +22,7 @@ The command name `-copy` is now configurabled. Just set your `COMMAND_NAME` vari
 1. **Download the script:**
 
    ```bash
-   curl -o copy-claude-response https://raw.githubusercontent.com/Twizzes/copy-claude-response/main/copy-claude-response
+   curl -o copy-claude-response https://raw.githubusercontent.com/davidkim10/copy-claude-response/main/copy-claude-response
    chmod +x copy-claude-response
    ```
 
